@@ -1,0 +1,132 @@
+#include<Wire.h>
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(10, 11); // RX, TX
+const int MPU_addr=0x68; // I2C address of the MPU-6050
+int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+void setup(){
+lcd.begin();
+Wire.begin();
+Wire.beginTransmission(MPU_addr);
+Wire.write(0x6B); // PWR_MGMT_1 register
+Wire.write(0); // set to zero (wakes up the MPU-6050)
+Wire.endTransmission(true);
+Serial.begin(9600);
+mySerial.begin(9600);
+lcd.backlight();
+lcd.setCursor(0,0);
+lcd.print("Hello......");
+}
+
+void loop(){
+Wire.beginTransmission(MPU_addr);
+Wire.write(0x3B); // starting with register 0x3B (ACCEL_XOUT_H)
+Wire.endTransmission(false);
+Wire.requestFrom(MPU_addr,14,true); // request a total of 14 registers
+AcX=Wire.read()<<8|Wire.read(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
+AcY=Wire.read()<<8|Wire.read(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
+AcZ=Wire.read()<<8|Wire.read(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+Tmp=Wire.read()<<8|Wire.read(); // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L)
+GyX=Wire.read()<<8|Wire.read(); // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
+GyY=Wire.read()<<8|Wire.read(); // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
+GyZ=Wire.read()<<8|Wire.read(); // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
+//Serial.print("AcX = "); Serial.println(AcX);
+//Serial.print("AcY = "); Serial.println(AcY);
+
+int T = analogRead(A0);
+int I = analogRead(A1);
+int M = analogRead(A2);
+/*
+Serial.print("T =");
+Serial.println(T);
+Serial.print("M =");
+Serial.println(M);
+Serial.print("I =");
+Serial.println(I);
+*/ 
+
+if (AcX<=-5000 && M<=200 && T>=200 && I<=200)
+{
+  Serial.println("ok");
+  mySerial.println("ok");
+  lcd.setCursor(0,0);
+  lcd.print("ok");
+  delay(1000);
+} 
+
+if (AcY<=-5000 && M<=200 && T<=200 && I>=200)
+{
+  Serial.println("i need break");
+  mySerial.println("i need break");
+  lcd.setCursor(0,0);
+  lcd.print("i need break");
+  delay(1000);
+}  
+
+if (AcY>=5000 && M<=200 && T<=200 && I>=200)
+{
+  mySerial.println("i need help");
+  Serial.println("i need help");
+  lcd.setCursor(0,0);
+  lcd.print("i need help");
+    delay(1000);
+} 
+
+if (AcX>=5000 && M<=200 && T>=200 && I<=200)
+{
+  mySerial.println("may i get a drink of water");
+  Serial.println("may i get a drink of water");
+  lcd.setCursor(0,0);
+  lcd.print("may i get a drink of water");
+    delay(1000);
+}  
+
+if  (AcY>=5000 && M>=200 && T<=200 && I<=200)
+{
+  mySerial.println("nice to meet you");
+  Serial.println("nice to meet you"); 
+  lcd.setCursor(0,0);
+  lcd.print("nice to meet you"); 
+    delay(1000);
+}  
+
+if  (AcX<=-5000 && AcY>=5000 && M<=200 && T>=200 && I>=200)
+{
+  mySerial.println("smile please");
+  Serial.println("smile please");
+  lcd.setCursor(0,0);
+  lcd.print("smile please");
+    delay(1000);
+} 
+ 
+if (AcY>=5000 && M>=200 && T>=200 && I>=200)
+{
+  mySerial.println("what is your name");
+  Serial.println("what is your name");
+  lcd.setCursor(0,0);
+  lcd.print("what is your name");
+    delay(1000);
+}  
+
+if  (AcY>=5000 && M>=200 && T<=200 && I>=200)
+{
+  mySerial.println("rest room");
+  Serial.println("rest room"); 
+  lcd.setCursor(0,0);
+  lcd.print("rest room"); 
+    delay(1000);
+} 
+
+if  (AcY>=5000 && M<=200 && T>=200 && I>=200)
+{
+  mySerial.println("L");
+  Serial.println("L"); 
+  lcd.setCursor(0,0);
+  lcd.print("L"); 
+    delay(1000);
+} 
+//delay(1000);
+lcd.clear();
+}r
